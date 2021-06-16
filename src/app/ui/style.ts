@@ -20,10 +20,15 @@ export const NavLayout = styled.div`
     text-overflow: ellipsis;
     white-space: nowrap;
     &:hover {
-      background-color: rgba(0, 0, 0, 0.05);
+      background-color: rgba(0, 0, 0, 0.07);
     }
   }
 `;
 export const ConfigLayout = styled.div`
+  height: 100%;
+`;
+
+export const ConfigPanelLayout = styled.div`
+  padding: 10px;
   height: 100%;
 `;

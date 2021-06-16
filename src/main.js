@@ -13,6 +13,12 @@ electron_1.app.on("ready", function () {
         },
         icon: path.join(__dirname, "../public/favicon.ico")
     });
-    var usrLocation = isDev ? "http://localhost:3000" : "dumm";
+    // hide menu
+    electron_1.Menu.setApplicationMenu(null);
+    // hide menu for Mac
+    if (!process.platform.includes("win")) {
+        electron_1.app.dock.hide();
+    }
+    var usrLocation = isDev ? "http://localhost:7000" : "dumm";
     mainWindow.loadURL(usrLocation);
 });

@@ -2,6 +2,7 @@ import React from "react";
 import { Button, List } from "antd";
 import { PlusOutlined } from "@ant-design/icons";
 import { ConfigLayout, MainLayout, NavLayout } from "./style";
+import ConfigPanel from "./ConfigPanel";
 
 export interface Props {}
 
@@ -31,9 +32,7 @@ function MainPage(props: Props) {
         />
       </NavLayout>
       <ConfigLayout>
-        right
-        {/* 配置页面 */}
-        Mac IP Address Subnet Mask Port Send Mode
+        <ConfigPanel config={{}} />
       </ConfigLayout>
     </MainLayout>
   );

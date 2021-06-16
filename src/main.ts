@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, Menu } from "electron";
 import * as isDev from "electron-is-dev";
 import * as path from "path";
 
@@ -14,6 +14,13 @@ app.on("ready", () => {
     icon: path.join(__dirname, "../public/favicon.ico"),
   });
 
-  const usrLocation = isDev ? "http://localhost:3000" : "dumm";
+  // hide menu
+  Menu.setApplicationMenu(null);
+  // hide menu for Mac
+  if (!process.platform.includes("win")) {
+    app.dock.hide();
+  }
+
+  const usrLocation = isDev ? "http://localhost:7000" : "dumm";
   mainWindow.loadURL(usrLocation);
 });
