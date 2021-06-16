@@ -6,8 +6,8 @@ var path = require("path");
 var mainWindow = null;
 electron_1.app.on("ready", function () {
     mainWindow = new electron_1.BrowserWindow({
-        width: 850,
-        height: 600,
+        width: 600,
+        height: 400,
         webPreferences: {
             nodeIntegration: true
         },
@@ -21,4 +21,8 @@ electron_1.app.on("ready", function () {
     }
     var usrLocation = isDev ? "http://localhost:7000" : "dumm";
     mainWindow.loadURL(usrLocation);
+    // 打开控制台
+    if (isDev) {
+        mainWindow.webContents.openDevTools();
+    }
 });

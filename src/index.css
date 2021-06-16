@@ -26,3 +26,22 @@ body {
 #root {
   height: 100%;
 }
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track-piece {
+  background-color: none;
+  background: rgba(0, 0, 0, 0.1);
+}
+::-webkit-scrollbar-thumb:vertical {
+  height: 6px;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:horizontal {
+  width: 6px;
+  background-color: rgba(0, 0, 0, 0.35);
+  border-radius: 3px;
+}
