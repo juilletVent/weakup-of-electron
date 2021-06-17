@@ -1,21 +1,19 @@
-import React, { useCallback, useState } from "react";
-import { Button, Empty, List, message } from "antd";
+import React, { useCallback, useEffect, useState } from "react";
+import { Button, Empty, List, message, Modal } from "antd";
 import { uniqueId } from "lodash";
 import { PlusOutlined } from "@ant-design/icons";
 import { ConfigLayout, MainLayout, NavLayout } from "./style";
 import ConfigPanel from "./ConfigPanel";
 import { ConfigItemI } from "../../types/ConfigItem";
 
-export interface Props {}
+const { ipcRenderer } = window.require("electron");
 
-function MainPage(props: Props) {
-  const [confs, setConfs] = useState<ConfigItemI[]>([]);
+function MainPage() {
+  const [confs, setConfs] = useState<ConfigItemI[]>();
   const [activeConf, setActiveConf] = useState<ConfigItemI>();
   const onAddConfig = useCallback(() => {
-    console.log("new");
-
     setActiveConf({
-      id: uniqueId("id_"),
+      id: Date.now().toString(),
       ip: "192.168.1.1",
       mac: "04-D4-C4-EC-D0-37",
       submask: "255.255.255.0",
@@ -25,25 +23,60 @@ function MainPage(props: Props) {
   }, []);
   const onSave = useCallback(
     (conf: ConfigItemI) => {
-      const targetIndex = confs.findIndex((item) => item.id === conf.id);
-      if (targetIndex !== -1) {
-        // 替换
+      const targetIndex = (confs || []).findIndex(
+        (item) => item.id === conf.id
+      );
+      if (targetIndex !== -1 && confs) {
+        // replace
         const nextConf = [...confs];
         nextConf[targetIndex] = conf;
-        console.log("nextConf", nextConf);
-
         setConfs(nextConf);
       } else {
-        console.log("add conf", conf);
-        setConfs([...confs, conf]);
+        // add
+        setConfs([...(confs || []), conf]);
       }
-      message.success("保存成功", 1);
     },
     [confs]
   );
   const onConfigActive = useCallback((item: ConfigItemI) => {
     setActiveConf(item);
   }, []);
+  const onWeakup = useCallback((item?: ConfigItemI) => {
+    if (item) {
+      // send magic packet
+      ipcRenderer.send("send", item);
+    }
+  }, []);
+
+  useEffect(() => {
+    ipcRenderer.on("send-reply", (event, arg) => {
+      if (arg.code === 1) {
+        message.success(arg.msg);
+        return;
+      }
+      Modal.error({
+        title: "发送失败",
+        content: arg.msg,
+      });
+    });
+    ipcRenderer.on("init-config", (event, arg) => {
+      setConfs(arg);
+      setActiveConf(arg[0]);
+    });
+    // 发送消息通知主线程加载配置文件
+    ipcRenderer.send("load-cofnig");
+
+    return () => {
+      ipcRenderer.removeAllListeners("send-reply");
+      ipcRenderer.removeAllListeners("init-config");
+    };
+  }, []);
+
+  useEffect(() => {
+    if (confs) {
+      ipcRenderer.send("write-cofnig", confs);
+    }
+  }, [confs]);
 
   return (
     <MainLayout>
@@ -56,7 +89,7 @@ function MainPage(props: Props) {
         {/* 已有配置列表 */}
         <List
           bordered
-          dataSource={confs}
+          dataSource={confs || []}
           renderItem={(item) => (
             <List.Item
               title={item.remark || item.ip}
@@ -77,7 +110,7 @@ function MainPage(props: Props) {
         />
       </NavLayout>
       <ConfigLayout>
-        <ConfigPanel config={activeConf} onSave={onSave} onWeakup={() => {}} />
+        <ConfigPanel config={activeConf} onSave={onSave} onWeakup={onWeakup} />
       </ConfigLayout>
     </MainLayout>
   );

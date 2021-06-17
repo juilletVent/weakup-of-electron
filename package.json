@@ -2,7 +2,7 @@
   "name": "weakup-of-electron",
   "version": "0.1.0",
   "private": true,
-  "main": "src/main.js",
+  "main": "dist/main.js",
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -29,7 +29,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-app": "cross-env PORT=7000 BROWSER=none npm start",
-    "start-ele": "npx wait-on tcp:7000 && tsc ./src/main.ts && npx electron .",
+    "start-ele": "npx wait-on tcp:7000 && tsc ./src/main.ts --outDir ./dist && npx electron .",
     "dev": "npx concurrently \"wait-on tcp:7000 && tsc ./src/main.ts && electron .\" \"cross-env PORT=7000 BROWSER=none npm start\""
   },
   "eslintConfig": {

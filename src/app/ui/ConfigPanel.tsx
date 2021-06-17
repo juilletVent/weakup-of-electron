@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect } from "react";
-import { Button, Form, Input, Select } from "antd";
+import { Button, Form, Input, message, Select } from "antd";
 import { BtnLayout, ConfigPanelLayout } from "./style";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { PATTERN_IP, PATTERN_MAC } from "../constant/regex";
@@ -27,12 +27,24 @@ function ConfigPanel(props: Props) {
   const { config, onSave, onWeakup } = props;
   const [form] = Form.useForm();
   const { validateFields } = form;
-  const onSaveInner = useCallback(() => {
-    validateFields().then((vals) => {
-      onSave({ ...vals, id: config?.id });
-    });
-  }, [config?.id, onSave, validateFields]);
-  const onWeakupInner = useCallback(() => {}, []);
+  const onSaveInner = useCallback(
+    (msg?: string) =>
+      validateFields().then(
+        (vals) => {
+          const conf = { ...vals, id: config?.id };
+          onSave(conf);
+          if (msg) {
+            message.success(msg, 1);
+          }
+          return conf;
+        },
+        () => {}
+      ),
+    [config?.id, onSave, validateFields]
+  );
+  const onWeakupInner = useCallback(() => {
+    onSaveInner().then(onWeakup);
+  }, [onSaveInner, onWeakup]);
 
   useEffect(() => {
     form.resetFields();
@@ -135,7 +147,10 @@ function ConfigPanel(props: Props) {
           >
             唤醒
           </Button>
-          <Button onClick={onSaveInner} icon={<SaveOutlined />}>
+          <Button
+            onClick={() => onSaveInner("保存成功")}
+            icon={<SaveOutlined />}
+          >
             保存
           </Button>
         </BtnLayout>
