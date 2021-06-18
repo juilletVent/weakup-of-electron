@@ -38,6 +38,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.sendMagicPacket = void 0;
 var dgram = require("dgram");
+var ConfigItem_1 = require("../../types/ConfigItem");
 function getPayload(conf) {
     var buffer = new Array(6);
     // fill header
@@ -51,13 +52,27 @@ function getPayload(conf) {
     }
     return Uint8Array.from(buffer);
 }
+var flipBit = function (p) { return (~p << 24) >>> 24; };
+function getDestinationIP(conf) {
+    if (+conf.mode === ConfigItem_1.SendMode.IP) {
+        return conf.ip;
+    }
+    var ips = conf.ip.split(".");
+    var masks = conf.submask.split(".").map(function (i) { return parseInt(i); });
+    var flipMasks = conf.submask.split(".").map(function (i) { return flipBit(parseInt(i)); });
+    var subnetAddr = ips.map(function (v, i) { return +v & masks[i]; });
+    var broadcastAddr = subnetAddr.map(function (v, i) { return v | flipMasks[i]; }).join(".");
+    console.log("broadcastAddr", broadcastAddr);
+    return conf.ip;
+}
 function sendMagicPacket(conf) {
     return __awaiter(this, void 0, void 0, function () {
-        var udpClient, payload;
+        var udpClient, payload, dstIp;
         return __generator(this, function (_a) {
             udpClient = dgram.createSocket("udp4");
             payload = getPayload(conf);
-            udpClient.send(payload, +conf.port, conf.ip, function (err, bytes) {
+            dstIp = getDestinationIP(conf);
+            udpClient.send(payload, +conf.port, dstIp, function (err, bytes) {
                 if (err) {
                     throw err;
                 }

@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, Empty, List, message, Modal } from "antd";
-import { uniqueId } from "lodash";
-import { PlusOutlined } from "@ant-design/icons";
+import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { ConfigLayout, MainLayout, NavLayout } from "./style";
 import ConfigPanel from "./ConfigPanel";
 import { ConfigItemI } from "../../types/ConfigItem";
@@ -14,9 +13,9 @@ function MainPage() {
   const onAddConfig = useCallback(() => {
     setActiveConf({
       id: Date.now().toString(),
-      ip: "192.168.1.1",
-      mac: "04-D4-C4-EC-D0-37",
-      submask: "255.255.255.0",
+      ip: "",
+      mac: "",
+      submask: "",
       port: "9",
       mode: "1",
     });
@@ -35,6 +34,12 @@ function MainPage() {
         // add
         setConfs([...(confs || []), conf]);
       }
+    },
+    [confs]
+  );
+  const onDelete = useCallback(
+    (target: ConfigItemI) => {
+      setConfs(confs?.filter((conf) => conf.id !== target.id));
     },
     [confs]
   );
@@ -92,10 +97,21 @@ function MainPage() {
           dataSource={confs || []}
           renderItem={(item) => (
             <List.Item
+              className={activeConf?.id === item.id ? "active" : ""}
               title={item.remark || item.ip}
               onClick={() => onConfigActive(item)}
             >
               {item.remark || item.ip}
+              <Button
+                title="删除"
+                className="del-btn"
+                key="delete"
+                type="link"
+                danger
+                onClick={() => onDelete(item)}
+              >
+                <DeleteOutlined />
+              </Button>
             </List.Item>
           )}
           size="small"

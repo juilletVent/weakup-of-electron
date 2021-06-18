@@ -11,11 +11,26 @@ export const NavLayout = styled.div`
   .ant-list {
     height: calc(100% - 32px);
     overflow-y: auto;
+    padding-top: 5px;
+    button {
+      padding: 0 3px;
+    }
+  }
+  .active,
+  .ant-list-item:hover {
+    color: #1890ff;
+  }
+  .ant-list-item.active {
+    background-color: #e6f7ff;
+    &::before {
+      transform: scale(1, 1);
+    }
   }
   .ant-list-bordered {
     border: none;
   }
   .ant-list-item {
+    position: relative;
     display: block;
     cursor: pointer;
     transition: all 0.3s;
@@ -23,8 +38,23 @@ export const NavLayout = styled.div`
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    &:hover {
-      background-color: rgba(0, 0, 0, 0.07);
+    .del-btn {
+      position: absolute;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    &::before {
+      display: block;
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: 100%;
+      width: 3px;
+      background-color: #1890ff;
+      transform: scale(0, 0);
+      transition: all 0.3s;
     }
   }
 `;

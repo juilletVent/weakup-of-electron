@@ -1,3 +1,10 @@
+export enum SendMode {
+  /** send to target ip */
+  IP = 1,
+  /** send to broadcast ip */
+  broadcast,
+}
+
 export interface ConfigItemI {
   id: string;
   /** address of mac */
@@ -8,8 +15,8 @@ export interface ConfigItemI {
   submask: string;
   /** send port */
   port: string;
-  /** send mode */
-  mode: string;
+  /** send mode：1 ip / 2 broadcast */
+  mode: SendMode;
   /** config remark */
   remark?: string;
 }
