@@ -2,7 +2,63 @@
   "name": "weakup-of-electron",
   "version": "0.1.0",
   "private": true,
-  "main": "dist/main.js",
+  "main": "build/main.js",
+  "author": "juilletVent",
+  "description": "weakup on lan",
+  "build": {
+    "appId": "weakup-of-electron@juilletVent",
+    "productName": "weakup-of-electron",
+    "copyright": "Copyright @ 2021 ${author}",
+    "files": [
+      "build/**/*",
+      "!node_modules/**/*"
+    ],
+    "extends": null,
+    "extraMetadata": {
+      "main": "./build/main.js"
+    },
+    "mac": {
+      "category": "public.app-category.productivity",
+      "artifactName": "${productName}-${version}-${arch}.${ext}"
+    },
+    "dmg": {
+      "background": "assets/appdmg.png",
+      "icon": "assets/icon.icns",
+      "iconSize": 100,
+      "contents": [
+        {
+          "x": 380,
+          "y": 280,
+          "type": "link",
+          "path": "/Applications"
+        },
+        {
+          "x": 110,
+          "y": 280,
+          "type": "file"
+        }
+      ],
+      "window": {
+        "width": 500,
+        "height": 500
+      }
+    },
+    "win": {
+      "target": [
+        "msi",
+        "nsis"
+      ],
+      "icon": "assets/icon.ico",
+      "artifactName": "${productName}-Web-Setup-${version}.${ext}",
+      "publisherName": "Viking Zhang"
+    },
+    "nsis": {
+      "allowToChangeInstallationDirectory": true,
+      "oneClick": false,
+      "perMachine": false
+    }
+  },
+  "homepage": "./",
   "dependencies": {
     "@ant-design/icons": "^4.6.2",
     "@testing-library/jest-dom": "^5.11.4",
@@ -13,7 +69,6 @@
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
     "antd": "^4.16.3",
-    "electron": "^13.1.2",
     "electron-is-dev": "^2.0.0",
     "lodash": "^4.17.21",
     "react": "^17.0.2",
@@ -25,12 +80,14 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build-app": "cross-env GENERATE_SOURCEMAP=false react-scripts build",
+    "build-ele": "webpack --config ele-webpack.config.js",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-app": "cross-env PORT=7000 BROWSER=none npm start",
-    "start-ele": "npx wait-on tcp:7000 && tsc ./src/main.ts --outDir ./dist && npx electron .",
-    "dev": "npx concurrently \"wait-on tcp:7000 && tsc ./src/main.ts && electron .\" \"cross-env PORT=7000 BROWSER=none npm start\""
+    "start-ele": "npx wait-on tcp:7000 && tsc ./src/main.ts --outDir ./build && npx electron .",
+    "dev": "npx concurrently \"wait-on tcp:7000 && tsc ./src/main.ts --outDir ./build && electron .\" \"cross-env PORT=7000 BROWSER=none npm start\"",
+    "build": "electron-builder"
   },
   "eslintConfig": {
     "extends": [
@@ -55,6 +112,10 @@
     "@types/styled-components": "^5.1.10",
     "concurrently": "^6.2.0",
     "cross-env": "^7.0.3",
-    "wait-on": "^5.3.0"
+    "electron": "^13.1.2",
+    "electron-builder": "^22.11.7",
+    "ts-loader": "8.2.0",
+    "wait-on": "^5.3.0",
+    "webpack-cli": "^4.7.2"
   }
 }

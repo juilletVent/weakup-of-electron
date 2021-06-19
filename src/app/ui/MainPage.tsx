@@ -3,7 +3,7 @@ import { Button, Empty, List, message, Modal } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
 import { ConfigLayout, MainLayout, NavLayout } from "./style";
 import ConfigPanel from "./ConfigPanel";
-import { ConfigItemI } from "../../types/ConfigItem";
+import { ConfigItemI, SendMode } from "../../types/ConfigItem";
 
 const { ipcRenderer } = window.require("electron");
 
@@ -17,7 +17,7 @@ function MainPage() {
       mac: "",
       submask: "",
       port: "9",
-      mode: "1",
+      mode: SendMode.IP,
     });
   }, []);
   const onSave = useCallback(

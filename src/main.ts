@@ -6,8 +6,8 @@ import { sendMagicPacket } from "./app/utils/sendMagicPacket";
 
 app.on("ready", () => {
   const mainWindow = new BrowserWindow({
-    width: 600,
-    height: 400,
+    width: 620,
+    height: 440,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -22,7 +22,9 @@ app.on("ready", () => {
     app.dock.hide();
   }
 
-  const usrLocation = isDev ? "http://localhost:7000" : "dumm";
+  const usrLocation = isDev
+    ? "http://localhost:7000"
+    : `file://${path.join(__dirname, "../build/index.html")}`;
   mainWindow.loadURL(usrLocation);
 
   // 打开控制台
