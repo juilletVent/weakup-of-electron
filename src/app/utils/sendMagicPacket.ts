@@ -33,6 +33,9 @@ function getDestinationIP(conf: ConfigItemI) {
 
 export async function sendMagicPacket(conf: ConfigItemI) {
   const udpClient = dgram.createSocket("udp4");
+  udpClient.once("listening", function () {
+    udpClient.setBroadcast(true);
+  });
   const payload = getPayload(conf);
   const dstIp = getDestinationIP(conf);
   udpClient.send(payload, +conf.port, dstIp, (err, bytes) => {
