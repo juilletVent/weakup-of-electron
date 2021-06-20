@@ -1,15 +1,25 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Button, Empty, List, message, Modal } from "antd";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { Button, Empty, List, message, Modal, Select } from "antd";
 import { DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import { pick } from "lodash";
 import { ConfigLayout, MainLayout, NavLayout } from "./style";
-import ConfigPanel from "./ConfigPanel";
 import { ConfigItemI, SendMode } from "../../types/ConfigItem";
+import ConfigPanel from "./ConfigPanel";
+import i18n from "../i18n";
+import { useI18n } from "../hooks/useI18n.hooks";
 
+const { Option } = Select;
 const { ipcRenderer } = window.require("electron");
 
 function MainPage() {
   const [confs, setConfs] = useState<ConfigItemI[]>();
   const [activeConf, setActiveConf] = useState<ConfigItemI>();
+  const [activeLanguage, setActiveLanguage] = useState<string>("zh-CN");
+  const i18nConf = useI18n(activeLanguage);
+  const i18nOpt = useMemo(
+    () => i18n.map((item) => pick(item, ["key", "title"])),
+    []
+  );
   const onAddConfig = useCallback(() => {
     setActiveConf({
       id: Date.now().toString(),
@@ -56,11 +66,11 @@ function MainPage() {
   useEffect(() => {
     ipcRenderer.on("send-reply", (event, arg) => {
       if (arg.code === 1) {
-        message.success(arg.msg);
+        message.success(i18nConf.STR_SEND_SUCC_MSG);
         return;
       }
       Modal.error({
-        title: "发送失败",
+        title: i18nConf.STR_SEND_ERR_MSG,
         content: arg.msg,
       });
     });
@@ -75,7 +85,7 @@ function MainPage() {
       ipcRenderer.removeAllListeners("send-reply");
       ipcRenderer.removeAllListeners("init-config");
     };
-  }, []);
+  }, [i18nConf]);
 
   useEffect(() => {
     if (confs) {
@@ -89,7 +99,7 @@ function MainPage() {
         {/* 新增按钮 */}
         <Button type="primary" block onClick={onAddConfig}>
           <PlusOutlined />
-          新增配置
+          {i18nConf.STR_BTN_ADD}
         </Button>
         {/* 已有配置列表 */}
         <List
@@ -103,7 +113,7 @@ function MainPage() {
             >
               {item.remark || item.ip}
               <Button
-                title="删除"
+                title={i18nConf.STR_BTN_DELETE}
                 className="del-btn"
                 key="delete"
                 type="link"
@@ -119,14 +129,31 @@ function MainPage() {
             emptyText: (
               <Empty
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
-                description="暂无配置"
+                description={i18nConf.STR_EMPTY}
               />
             ),
           }}
         />
+        <Select
+          value={activeLanguage}
+          onChange={setActiveLanguage}
+          style={{ width: "100%" }}
+          size="small"
+        >
+          {i18nOpt.map((conf) => (
+            <Option key={conf.key} value={conf.key}>
+              {conf.title}
+            </Option>
+          ))}
+        </Select>
       </NavLayout>
       <ConfigLayout>
-        <ConfigPanel config={activeConf} onSave={onSave} onWeakup={onWeakup} />
+        <ConfigPanel
+          config={activeConf}
+          onSave={onSave}
+          onWeakup={onWeakup}
+          languageKey={activeLanguage}
+        />
       </ConfigLayout>
     </MainLayout>
   );

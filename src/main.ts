@@ -13,6 +13,7 @@ app.on("ready", () => {
       contextIsolation: false,
     },
     icon: path.join(__dirname, "../public/favicon.ico"),
+    resizable: isDev,
   });
 
   // hide menu

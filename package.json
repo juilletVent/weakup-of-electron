@@ -25,6 +25,7 @@
       "background": "assets/appdmg.png",
       "icon": "assets/icon.icns",
       "iconSize": 100,
+      "writeUpdateInfo": false,
       "contents": [
         {
           "x": 380,
@@ -49,13 +50,14 @@
         "nsis"
       ],
       "icon": "assets/icon.ico",
-      "artifactName": "${productName}-Web-Setup-${version}.${ext}",
-      "publisherName": "Viking Zhang"
+      "artifactName": "${productName}-Setup-${version}.${ext}",
+      "publisherName": "juilletVent"
     },
     "nsis": {
       "allowToChangeInstallationDirectory": true,
       "oneClick": false,
-      "perMachine": false
+      "perMachine": false,
+      "differentialPackage": false
     }
   },
   "homepage": "./",
@@ -85,9 +87,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "start-app": "cross-env PORT=7000 BROWSER=none npm start",
-    "start-ele": "npx wait-on tcp:7000 && tsc ./src/main.ts --outDir ./build && npx electron .",
-    "dev": "npx concurrently \"wait-on tcp:7000 && tsc ./src/main.ts --outDir ./build && electron .\" \"cross-env PORT=7000 BROWSER=none npm start\"",
-    "build": "electron-builder"
+    "start-ele": "npx wait-on tcp:7000 && nodemon && npx electron .",
+    "start-frame": "electron .",
+    "dev": "npx concurrently \"wait-on tcp:7000 && npm run build-ele && electron .\" \"cross-env PORT=7000 BROWSER=none npm start\"",
+    "build": "electron-builder",
+    "prebuild": "npm run build-ele",
+    "prebuild-ele": "npm run build-app",
+    "packet": "electron-builder"
   },
   "eslintConfig": {
     "extends": [
@@ -114,6 +120,7 @@
     "cross-env": "^7.0.3",
     "electron": "^13.1.2",
     "electron-builder": "^22.11.7",
+    "nodemon": "^2.0.7",
     "ts-loader": "8.2.0",
     "wait-on": "^5.3.0",
     "webpack-cli": "^4.7.2"

@@ -9,7 +9,7 @@ export const NavLayout = styled.div`
   border-right: 1px solid #d9d9d9;
   height: 100%;
   .ant-list {
-    height: calc(100% - 32px);
+    height: calc(100% - 56px);
     overflow-y: auto;
     padding-top: 5px;
     button {

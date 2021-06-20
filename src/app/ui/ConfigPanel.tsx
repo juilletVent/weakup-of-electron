@@ -4,11 +4,13 @@ import { BtnLayout, ConfigPanelLayout } from "./style";
 import { SaveOutlined, SendOutlined } from "@ant-design/icons";
 import { PATTERN_IP, PATTERN_MAC } from "../constant/regex";
 import { ConfigItemI } from "../../types/ConfigItem";
+import { useI18n } from "../hooks/useI18n.hooks";
 
-export interface Props {
+interface Props {
   config?: ConfigItemI;
   onSave: (conf: ConfigItemI) => void;
   onWeakup: (conf: ConfigItemI) => void;
+  languageKey: string;
 }
 
 const { Option } = Select;
@@ -16,17 +18,18 @@ const layout = {
   labelCol: { span: 6 },
   wrapperCol: { span: 17 },
 };
-const checkPort = (_: any, value: string | number) => {
+const checkPort = (errMsg: string) => (_: any, value: string | number) => {
   if (+value < 1 || +value > 65535) {
-    return Promise.reject(new Error("端口无效，请输入1-65535之间的端口号"));
+    return Promise.reject(new Error(errMsg));
   }
   return Promise.resolve();
 };
 
 function ConfigPanel(props: Props) {
-  const { config, onSave, onWeakup } = props;
+  const { config, onSave, onWeakup, languageKey } = props;
   const [form] = Form.useForm();
   const { validateFields } = form;
+  const i18nConf = useI18n(languageKey);
   const onSaveInner = useCallback(
     (msg?: string) =>
       validateFields().then(
@@ -62,80 +65,80 @@ function ConfigPanel(props: Props) {
         initialValues={{ remember: true }}
       >
         <Form.Item
-          label="MAC地址"
+          label={i18nConf.STR_MAC_TIPS}
           name="mac"
           rules={[
-            { required: true, message: "请输入目标机器MAC地址" },
+            { required: true, message: i18nConf.STR_MAC_PLACEHOLDER },
             {
               pattern: PATTERN_MAC,
-              message: "目标机器MAC地址，横线或冒号分割均可",
+              message: i18nConf.STR_MAC_ERR_MSG,
             },
           ]}
         >
-          <Input placeholder="请输入目标机器MAC地址" allowClear />
+          <Input placeholder={i18nConf.STR_MAC_PLACEHOLDER} allowClear />
         </Form.Item>
 
         <Form.Item
-          label="IP地址"
+          label={i18nConf.STR_IP_TIPS}
           name="ip"
           rules={[
-            { required: true, message: "请输入目标机器IP地址" },
+            { required: true, message: i18nConf.STR_IP_PLACEHOLDER },
             {
               pattern: PATTERN_IP,
-              message: "请有效的IP地址",
+              message: i18nConf.STR_IP_ERR_MSG,
             },
           ]}
         >
-          <Input placeholder="请输入目标机器IP地址" allowClear />
+          <Input placeholder={i18nConf.STR_IP_PLACEHOLDER} allowClear />
         </Form.Item>
         <Form.Item
-          label="子网掩码"
+          label={i18nConf.STR_SUBMASK_TIPS}
           name="submask"
           rules={[
-            { required: true, message: "请输入目标机器子网掩码" },
+            { required: true, message: i18nConf.STR_SUBMASK_PLACEHOLDER },
             {
               pattern: PATTERN_IP,
-              message: "请有效的子网掩码",
+              message: i18nConf.STR_SUBMASK_ERR_MSG,
             },
           ]}
         >
-          <Input placeholder="请输入目标机器子网掩码" allowClear />
+          <Input placeholder={i18nConf.STR_SUBMASK_PLACEHOLDER} allowClear />
         </Form.Item>
         <Form.Item
-          label="目标端口"
+          label={i18nConf.STR_PORT_TIPS}
           name="port"
           validateFirst
           rules={[
-            { required: true, message: "请输入目标端口（通常为7或9）" },
+            { required: true, message: i18nConf.STR_PORT_PLACEHOLDER },
             {
-              validator: checkPort,
+              validator: checkPort(i18nConf.STR_PORT_ERR_MSG),
             },
           ]}
         >
-          <Input placeholder="请输入目标端口（通常为7或9）" allowClear />
+          <Input placeholder={i18nConf.STR_PORT_PLACEHOLDER} allowClear />
         </Form.Item>
         <Form.Item
-          label="发送模式"
+          label={i18nConf.STR_MODE_TIPS}
           name="mode"
-          rules={[{ required: true, message: "请选择发送模式" }]}
+          rules={[{ required: true, message: i18nConf.STR_MODE_PLACEHOLDER }]}
         >
-          <Select placeholder="请选择发送模式">
-            <Option value="1">发送至目标IP地址</Option>
-            <Option value="2">发送至广播地址</Option>
+          <Select placeholder={i18nConf.STR_MODE_PLACEHOLDER}>
+            <Option value={1}>{i18nConf.STR_MODE_OPT_1}</Option>
+            <Option value={2}>{i18nConf.STR_MODE_OPT_2}</Option>
           </Select>
         </Form.Item>
 
         <Form.Item
-          label="备注"
+          label={i18nConf.STR_REMARK_TIPS}
           name="remark"
           rules={[
             {
               max: 200,
-              message: "备注过长，至多200个字符",
+              message: i18nConf.STR_REMARK_ERR_MSG,
             },
           ]}
         >
-          <Input placeholder="请输入配置备注，默认为IP地址" allowClear />
+          <Input placeholder={i18nConf.STR_MODE_PLACEHOLDER} allowClear />
         </Form.Item>
 
         <BtnLayout>
@@ -145,13 +148,13 @@ function ConfigPanel(props: Props) {
             type="primary"
             icon={<SendOutlined />}
           >
-            唤醒
+            {i18nConf.STR_BTN_WEAKUP}
           </Button>
           <Button
-            onClick={() => onSaveInner("保存成功")}
+            onClick={() => onSaveInner(i18nConf.STR_SAVE_SUCC_MSG)}
             icon={<SaveOutlined />}
           >
-            保存
+            {i18nConf.STR_BTN_SAVE}
           </Button>
         </BtnLayout>
       </Form>
